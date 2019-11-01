@@ -1,2 +1,4 @@
 env/
-og.avi
+*.avi
+__pycache__
+*.mp4

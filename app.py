@@ -1,11 +1,12 @@
 from flask import Flask, request, redirect, url_for, render_template, flash, send_file
 import os
 from werkzeug.utils import secure_filename
-import basic
+from models import basic
 
-UPLOAD_FOLDER = 'static/video/'
+UPLOAD_FOLDER = 'static/video/input/'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 50*1024*1024  # upload limit 50MB
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -25,9 +26,11 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/out')
-def processed():
-    return send_file('og.avi', as_attachment=True)
+@app.route('/out/<filename>')
+def processed(filename):
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+    return send_file('static/video/output/og.avi', as_attachment=True)
 
 
 if __name__ == '__main__':
