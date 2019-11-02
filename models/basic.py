@@ -2,6 +2,7 @@ import cv2
 import os
 import pandas as pd
 import numpy as np
+import imutils
 
 
 def FrameExtract(path, reso):
@@ -13,32 +14,50 @@ def FrameExtract(path, reso):
     wi = reso
     hi = int(vidObj.get(cv2.CAP_PROP_FRAME_HEIGHT) /
              vidObj.get(cv2.CAP_PROP_FRAME_WIDTH)*reso)
-    success = 1
+    success = True
 
     while success:
 
         success, image = vidObj.read()
         if (success == True):
-            og_frame.append(image)
-            gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            gray_img = cv2.resize(gray_img, (wi, hi),
-                                  interpolation=cv2.INTER_AREA)
-            gray_img = cv2.GaussianBlur(gray_img, (21, 21), 0)
-            image = np.array(gray_img)
+            gray_img = cv2.resize(
+                image, (wi, hi), interpolation=cv2.INTER_AREA)
             # Saves the frames with frame-count
-            g_frame.append(image.flatten())
+            g_frame.append(gray_img)
 
-    return og_frame, g_frame, fps, hi, wi
+    return g_frame, fps, hi, wi
 
 
-def impPt(frame):
+def impPt(frame, fps):
     frame_nos = []
     imp_frams = []
-    for i in range(len(frame)-1):
-        if(np.mean(cv2.subtract(frame[0], frame[i])) > 1.5):
+    fgbg = cv2.createBackgroundSubtractorKNN()
+    kernel = np.ones((25, 25), np.uint8)
+    for i in range(len(frame)):
+        frameDelta = fgbg.apply(frame[i])
+        thresh = cv2.threshold(frameDelta, 200, 255, cv2.THRESH_BINARY)[1]
+
+        thresh = cv2.dilate(thresh, None, iterations=4)
+        cnts = cv2.findContours(
+            thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        cnts = imutils.grab_contours(cnts)
+
+        maxi = 0
+        for c in cnts:
+            if cv2.contourArea(c) > maxi:
+                maxi = cv2.contourArea(c)
+                cnt = c
+
+            if maxi > 500:
+                text = str(i/fps)
+                (x, y, w, h) = cv2.boundingRect(cnt)
+                cv2.rectangle(frame[i], (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(frame[i], text, (x, h), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.5, (255, 255, 255), lineType=cv2.LINE_AA)
+
+        if maxi > 500:
             frame_nos.append(i)
-            imp_frams.append(cv2.subtract(g_frames[0].reshape(
-                (height, width)), g_frames[i].reshape((height, width))))
+            imp_frams.append(frame[i])
     return frame_nos, imp_frams
 
 
@@ -50,12 +69,11 @@ def genImpVid(video_name, images, height, width, color, fps):
 
 
 def main(vid_file):
-    global og_frames, g_frames, fps, height, width, hist_arr, impFrams
+    global g_frames, fps, height, width, hist_arr, impFrams
 
-    og_frames, g_frames, fps, height, width = FrameExtract(vid_file, 500)
-    frame_nos, impFrams = impPt(g_frames)
-    genImpVid("static/video/output/og.mp4",
-              [og_frames[i] for i in frame_nos], 720, 1280, True, fps)
+    g_frames, fps, height, width = FrameExtract(vid_file, 500)
+    frame_nos, impFrams = impPt(g_frames, fps)
+    genImpVid("static/video/output/og.mp4", impFrams, height, width, True, fps)
     os.system(
         "yes | ffmpeg -i static/video/output/og.mp4 -vcodec libx264 static/video/output/output.mp4")
     os.remove("static/video/output/og.mp4")
