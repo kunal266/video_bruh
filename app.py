@@ -7,6 +7,7 @@ UPLOAD_FOLDER = 'static/video/input/'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 50*1024*1024  # upload limit 50MB
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -33,7 +34,7 @@ def processed(filename):
 
 @app.route('/download')
 def download():
-    return send_file('static/video/output/output.mp4', as_attachment=True, attachment_filename='processed-video.mp4')
+    return send_file('static/video/output/output.mp4', as_attachment=True, attachment_filename='processed-video.mp4', cache_timeout=0)
 
 
 if __name__ == '__main__':
