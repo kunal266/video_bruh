@@ -31,5 +31,10 @@ def processed(filename):
     return render_template('video-out.html', filename=filename)
 
 
+@app.route('/download')
+def download():
+    return send_file('static/video/output/output.mp4', as_attachment=True, attachment_filename='processed-video.mp4')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
