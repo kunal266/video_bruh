@@ -1,4 +1,4 @@
-import cv2
+from cv2 import cv2
 import os
 import pandas as pd
 import numpy as np
@@ -30,15 +30,6 @@ def FrameExtract(path, reso):
 
     return og_frame, g_frame, fps, hi, wi
 
-
-def convertHist(frames_arr):
-    hist_arr = []
-    bin = len(frames_arr[0])
-    for i in frames_arr:
-        hist_arr.append(np.histogram(i, bins=np.arange(bin))[0])
-    return hist_arr
-
-
 def impPt(frame):
     frame_nos = []
     imp_frams = []
@@ -52,7 +43,7 @@ def impPt(frame):
 
 def genImpVid(video_name, images, height, width, color, fps):
     writer = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(
-        *'PIM1'), fps, (width, height), color)
+        *'MPV4'), fps, (width, height), color)
     for i in images:
         writer.write(i)
 
@@ -61,7 +52,6 @@ def main(vid_file):
     global og_frames, g_frames, fps, height, width, hist_arr, impFrams
 
     og_frames, g_frames, fps, height, width = FrameExtract(vid_file, 500)
-    hist_arr = convertHist(g_frames)
     frame_nos, impFrams = impPt(g_frames)
 
-    return genImpVid("static/video/output/og.avi", [og_frames[i] for i in frame_nos], 720, 1280, True, fps)
+    return genImpVid("static/video/output/og.mp4", [og_frames[i] for i in frame_nos], 720, 1280, True, fps)

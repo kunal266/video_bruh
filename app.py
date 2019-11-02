@@ -22,15 +22,13 @@ def index():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             basic.main(os.path.join(
                 app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('processed', filename=filename))
+            return redirect(url_for('processed'))
     return render_template('index.html')
 
 
-@app.route('/out/<filename>')
-def processed(filename):
-    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-    return send_file('static/video/output/og.avi', as_attachment=True)
+@app.route('/out')
+def processed():
+    return render_template('video.html')
 
 
 if __name__ == '__main__':
