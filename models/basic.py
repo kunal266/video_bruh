@@ -30,6 +30,7 @@ def FrameExtract(path, reso):
 
     return og_frame, g_frame, fps, hi, wi
 
+
 def impPt(frame):
     frame_nos = []
     imp_frams = []
@@ -43,7 +44,7 @@ def impPt(frame):
 
 def genImpVid(video_name, images, height, width, color, fps):
     writer = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(
-        *'MPV4'), fps, (width, height), color)
+        *'MP4V'), fps, (width, height), color)
     for i in images:
         writer.write(i)
 
@@ -53,5 +54,11 @@ def main(vid_file):
 
     og_frames, g_frames, fps, height, width = FrameExtract(vid_file, 500)
     frame_nos, impFrams = impPt(g_frames)
+    genImpVid("static/video/output/og.mp4",
+              [og_frames[i] for i in frame_nos], 720, 1280, True, fps)
+    os.system(
+        "yes | ffmpeg -i static/video/output/og.mp4 -vcodec libx264 static/video/output/output.mp4")
+    os.remove("static/video/output/og.mp4")
 
-    return genImpVid("static/video/output/og.mp4", [og_frames[i] for i in frame_nos], 720, 1280, True, fps)
+
+# main("video.mp4")
