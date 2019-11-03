@@ -20,6 +20,7 @@ def index():
                 flash('No selected file')
                 return redirect(request.url)
             filename = secure_filename(file.filename)
+            file_name = filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             basic.main(os.path.join(
                 app.config['UPLOAD_FOLDER'], filename))
@@ -29,12 +30,15 @@ def index():
 
 @app.route('/out/<filename>')
 def processed(filename):
-    return render_template('video-out.html', filename=filename)
+    x = basic.graph("static/video/output/output.mp4",
+     os.path.join(app.config['UPLOAD_FOLDER'], filename), basic.fps)
+    return render_template('video-out.html', filename=filename,x=x)
 
 
 @app.route('/download')
 def download():
     return send_file('static/video/output/output.mp4', as_attachment=True, attachment_filename='processed-video.mp4', cache_timeout=0)
+
 
 
 if __name__ == '__main__':

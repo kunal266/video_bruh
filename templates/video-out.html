@@ -22,10 +22,67 @@
         <a href='https://videojs.com/html5-video-support/' target='_blank'>supports HTML5 video</a>
       </p>
     </video><br>
+    <p>Metrics:</p>
+    <div id="chart_div"></div><br>
     <form>
       <button type="submit" formaction="/download">Download</button>
-    </form>
-    <script src='https://vjs.zencdn.net/7.6.5/video.js'></script>
-  </body>
 
+    </form>
+    
+
+    <script src='https://vjs.zencdn.net/7.6.5/video.js'></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+    var d = {{x|tojson}}
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+    google.charts.setOnLoadCallback(drawAxisTickColors);
+
+    function drawAxisTickColors() {
+          var data = google.visualization.arrayToDataTable([
+            ['Stats', 'processed_video', 'original_video'],
+            ['filesize(times)', d[0], d[1]],
+            ['no_of_frames',d[2] ,d[3] ],
+            ['duration', d[4], d[5]],
+
+          ]);
+
+          var options = {
+            title: 'Population of Largest U.S. Cities',
+            chartArea: {width: '70%'},
+            width: 1200,
+            height: 700,
+            hAxis: {
+              title: 'Total Population',
+              minValue: 0,
+              textStyle: {
+                bold: true,
+                fontSize: 12,
+                color: '#4d4d4d'
+              },
+              titleTextStyle: {
+                bold: true,
+                fontSize: 18,
+                color: '#4d4d4d'
+              }
+            },
+            vAxis: {
+              title: 'City',
+              textStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#848484'
+              },
+              titleTextStyle: {
+                fontSize: 14,
+                bold: true,
+                color: '#848484'
+              }
+            }
+          };
+          var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+          chart.draw(data, options);
+        }
+    </script>
+    
+  </body>
 </html>
