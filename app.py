@@ -13,6 +13,7 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
+    global flag
     if request.method == 'POST':
         if 'file' in request.files:
             file = request.files['file']
@@ -22,8 +23,14 @@ def index():
             filename = secure_filename(file.filename)
             file_name = filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            basic.main(os.path.join(
-                app.config['UPLOAD_FOLDER'], filename))
+            if request.form.get('carcrash'):
+                basic.main(os.path.join(
+                    app.config['UPLOAD_FOLDER'], filename))
+                flag = 1
+            else:
+                basic.main2(os.path.join(
+                    app.config['UPLOAD_FOLDER'], filename))
+                flag = 0
             return redirect(url_for('processed', filename=filename))
     return render_template('index.html')
 
@@ -31,15 +38,17 @@ def index():
 @app.route('/out/<filename>')
 def processed(filename):
     x = basic.graph("static/video/output/output.mp4",
-     os.path.join(app.config['UPLOAD_FOLDER'], filename), basic.fps)
-    return render_template('output.html', filename=filename,x=x)
+     os.path.join(app.config['UPLOAD_FOLDER'], filename),basic.fps)
+    return render_template('output.html', filename=filename,x=x,flag = flag)
 
 
 @app.route('/download')
 def download():
+    if flag==1:
+        return send_file('static/video/output/acci-out.mp4', as_attachment=True, attachment_filename='accident-video.mp4', cache_timeout=0)
     return send_file('static/video/output/output.mp4', as_attachment=True, attachment_filename='processed-video.mp4', cache_timeout=0)
 
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)

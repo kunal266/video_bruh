@@ -3,3 +3,6 @@ numpy
 flask
 opencv-python
 imutils
+tensorflow
+pillow
+matplotlib

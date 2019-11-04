@@ -34,7 +34,7 @@
 				
 					<!-- section title -->
 					<div class="title text-center wow fadeIn" data-wow-duration="1500ms" >
-						<h2>Output <span class="color">Video</span> </h2>
+						<h2><span class="color">Video(s)</span> </h2>
 						<div class="border"></div>
 					</div>
 					<!-- /section title -->
@@ -44,14 +44,24 @@
 					<div class="col-sm-5 text-center wow fadeInUp" data-wow-duration="500ms" style="margin-left:30px" >
 						<div class="block">							
 					<video id='my-video' class='video-js vjs-big-play-centered' controls="controls" preload='auto' width='670' height='400' poster='' data-setup='{"playbackRates": [1, 1.5, 2]}'>
-      		<source src="/static/video/input/{{ filename }}" type="video/mp4">
+
+					{% if flag == 1 %}
+						<source src="/static/video/output/acci-out.mp4" type="video/mp4">
+					{% else %}
+      			<source src="/static/video/input/{{ filename }}" type="video/mp4">
+					{% endif %}
+
       		<p class='vjs-no-js'>
        		 To view this video please enable JavaScript, and consider upgrading to a web browser that
         	<a href='https://videojs.com/html5-video-support/' target='_blank'>supports HTML5 video</a>
       		</p>
     			</video>
 					<div class="content text-center">
+							{% if flag == 1 %}
+								<h3>Accident Video</h3>
+							{% else %}
 								<h3>Input Video</h3>
+							{% endif %}
 							</div>
 						</div>
 					</div> 
