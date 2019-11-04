@@ -32,7 +32,7 @@ def index():
 def processed(filename):
     x = basic.graph("static/video/output/output.mp4",
      os.path.join(app.config['UPLOAD_FOLDER'], filename), basic.fps)
-    return render_template('video-out.html', filename=filename,x=x)
+    return render_template('output.html', filename=filename,x=x)
 
 
 @app.route('/download')

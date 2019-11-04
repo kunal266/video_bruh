@@ -90,14 +90,14 @@ def graph(inf, outf, fps):
 
     cap = cv2.VideoCapture(inf)
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    graph_list[2] = (frame_count)
+    graph_list[2] = (frame_count/20)
     duration = frame_count/fps
     graph_list[4] = (duration)
     cap.release()
 
     cap = cv2.VideoCapture(outf)
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    graph_list[3] = (frame_count)
+    graph_list[3] = (frame_count/20)
     duration = frame_count/fps
     graph_list[5] = (duration)
     cap.release()
