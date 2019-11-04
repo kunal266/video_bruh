@@ -44,9 +44,11 @@ def processed(filename):
 
 @app.route('/download')
 def download():
-    if flag==1:
-        return send_file('static/video/output/acci-out.mp4', as_attachment=True, attachment_filename='accident-video.mp4', cache_timeout=0)
     return send_file('static/video/output/output.mp4', as_attachment=True, attachment_filename='processed-video.mp4', cache_timeout=0)
+
+@app.route('/download1')
+def download1():
+    return send_file('static/video/output/acci-out.mp4', as_attachment=True, attachment_filename='accident-video.mp4', cache_timeout=0)
 
 
 

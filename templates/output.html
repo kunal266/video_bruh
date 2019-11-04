@@ -101,14 +101,14 @@
 			<!-- /section title -->
 			
             <!-- Single Service Item -->
-<div style="display: flex;margin-left:105px;">
+<div style="display: flex;text-align:center;align-items:center;margin-left:105px;">
 			<div class=" wow fadeInUp" data-wow-duration="500ms">
  <div id="chart_div"></div><br>
 			</div>
 
-			<div class=" wow fadeInUp" data-wow-duration="500ms" style="margin-left:30px;">
+			<div class=" wow fadeInUp" data-wow-duration="500ms" style="margin-left:10px;">
 							<div class="content">
-								<h3>Loda Ipsum</h3>
+								<h3 style="font-size:35px;">It is quite clear that the summarized video is lesser in size when compared to original video. Moreover, it is also visible that the summarized video is of short duration and only contains relevant information.</h3>
 							</div>
 		
 			</div>
@@ -120,7 +120,12 @@
 		 <br><br><br>
 	<center>
 	     <form>
+			 {% if flag == 1 %}
+			<button class="btnn" type="submit" formaction="/download">Download Accident Video</button>
+			<button class="btnn" type="submit" formaction="/download1">Download Summarized Video</button>
+			{% else %}
       <button class="btnn" type="submit" formaction="/download">Download</button>
+			{% endif %}
     </form>
 		</center>
 </section> 
