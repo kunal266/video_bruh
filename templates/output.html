@@ -21,7 +21,11 @@
 		<!-- Main Stylesheet -->
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 				<link href="https://vjs.zencdn.net/7.6.5/video-js.css" rel="stylesheet">
-
+		<style>
+		#chart_div text {
+    fill: white !important;
+}
+		</style>
 			
     </head>
 	
@@ -152,13 +156,14 @@
             chartArea: {width: '70%'},
             width: 870,
             height:500 ,
+						backgroundColor: '#353b43',
             hAxis: {
               title: '---',
               minValue: 0,
               textStyle: {
                 bold: true,
                 fontSize: 12,
-                color: '#4d4d4d'
+                color: '#ffffff'
               },
               titleTextStyle: {
                 bold: true,
@@ -171,12 +176,12 @@
               textStyle: {
                 fontSize: 14,
                 bold: true,
-                color: '#848484'
+                color: '#ffffff'
               },
               titleTextStyle: {
                 fontSize: 14,
                 bold: true,
-                color: '#848484'
+                color: '#ffffff'
               }
 							
             }
