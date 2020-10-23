@@ -1,18 +1,10 @@
 import cv2
 import os
-import pandas as pd
-import numpy as np
 import imutils
 import numpy as np
-from .AccidentsClassifier import AccidentsClassifier
-from PIL import Image
-
-from .object_detection.utils import label_map_util
-from .object_detection.utils import visualization_utils as vis_util
 
 
 def ImpTimestamp(timestamps,fps):
-    
     impTime = []
     for i in range(len(timestamps)-1):
       if (timestamps[i+1]-timestamps[i]- float(1/fps)) > 0.0001:
@@ -21,34 +13,7 @@ def ImpTimestamp(timestamps,fps):
 
     return impTime
 
-def detectAccident(impFrams,frame_nos):
-    
-    PATH_TO_LABELS = os.path.join('models/','accidents.pbtxt')
-    NUM_CLASSES = 1
-
-    label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
-    categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
-    category_index = label_map_util.create_category_index(categories)
-
-    li = []
-    mostimpfram = []
-    for i in range(0,len(impFrams),10):
-        img = np.array(impFrams[i])
-
-        x = AccidentsClassifier()
-        boxes, scores, classes, num = x.get_classification(img)
-        
-        if np.sum(scores)>1:
-            mostimpfram.append(frame_nos[i])
-            
-        vis_util.visualize_boxes_and_labels_on_image_array(img, np.squeeze(boxes), np.squeeze(classes).astype(np.int32), np.squeeze(scores), category_index, use_normalized_coordinates=True, line_thickness=2)
-
-        li.append(img)
-    
-    return li, mostimpfram
-
 def FrameExtract(path,reso): 
-      
     vidObj = cv2.VideoCapture(path) 
     fps = vidObj.get(cv2.CAP_PROP_FPS)
     g_frame=[]
@@ -130,7 +95,6 @@ def graph(inf, outf,fps):     #returns list- [input file size, output file size,
     graph_list[5] = (duration)
     cap.release()
 
-
     return graph_list.tolist()
 
 def genImpVid(video_name, images, height, width, color, fps):
@@ -138,45 +102,17 @@ def genImpVid(video_name, images, height, width, color, fps):
     for i in images:
         writer.write(i)
         
-
 def main(vid_file):
-    global og_frames, g_frames, fps, height, width, hist_arr, impFrams , frame_nos
-
-    g_frames,fps,height,width = FrameExtract(vid_file,480)
-    frame_nos,impFrams,timestamps = impPt(g_frames,fps)
-    g_frames = 0
-
-    genImpVid("static/video/output/og.mp4",impFrams,height,width,False,fps)
-    
-    impTS = ImpTimestamp(timestamps,fps)
-    
-    os.system(
-        "yes | ffmpeg -i static/video/output/og.mp4 -vcodec libx264 static/video/output/output.mp4")
-    os.remove("static/video/output/og.mp4")
-  
-    acci, mostimpfram = detectAccident(impFrams, frame_nos)
-    impFrams = 0
-    genImpVid("static/video/output/acci.mp4",acci,height,width,True,fps/10)
-    acci = 0
-
-    os.system(
-        "yes | ffmpeg -i static/video/output/acci.mp4 -vcodec libx264 static/video/output/acci-out.mp4")
-    os.remove("static/video/output/acci.mp4")
-    
-def main2(vid_file):
-    global og_frames, g_frames, fps, height, width, hist_arr, impFrams , frame_nos
-
-    g_frames,fps,height,width = FrameExtract(vid_file,480)
-    frame_nos,impFrams,timestamps = impPt(g_frames,fps)
+    g_frames, fps, height, width = FrameExtract(vid_file,480)
+    _, impFrams, timestamps = impPt(g_frames,fps)
     g_frames = 0
 
     genImpVid("static/video/output/og.mp4",impFrams,height,width,True,fps)
-    
-    impTS = ImpTimestamp(timestamps,fps)
-    
+
+    ImpTimestamp(timestamps,fps)
+
     os.system(
         "yes | ffmpeg -i static/video/output/og.mp4 -vcodec libx264 static/video/output/output.mp4")
     os.remove("static/video/output/og.mp4")
 
-
-# main('video.mp4')
+    return fps

@@ -1,54 +1,65 @@
-from flask import Flask, request, redirect, url_for, render_template, flash, send_file
+from flask import Flask, request, redirect, url_for, render_template, send_file
 import os
 from werkzeug.utils import secure_filename
 from models import basic
 
 UPLOAD_FOLDER = 'static/video/input/'
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 50*1024*1024  # upload limit 50MB
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 
+
+"""
+    HELPERS
+"""
+def makedirs():
+    root_path = os.path.abspath(os.path.dirname(__file__))
+    static_dir = os.path.join(root_path, 'static')
+    os.mkdir(os.path.join(static_dir, 'video'))
+    video_dir = os.path.join(static_dir, 'video')
+    folders = ['output', 'input']
+    for folder in folders:
+        os.mkdir(os.path.join(video_dir, folder))
+
+
+"""
+    ROUTES
+"""
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
 def index():
-    global flag
     if request.method == 'POST':
         if 'file' in request.files:
             file = request.files['file']
             if file.filename == '':
-                flash('No selected file')
                 return redirect(request.url)
             filename = secure_filename(file.filename)
-            file_name = filename
+
+            # create video, input & output folder in static dir
+            if not os.path.exists(UPLOAD_FOLDER):
+                makedirs()
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            if request.form.get('carcrash'):
-                basic.main(os.path.join(
+
+            # run the summarizer & get fps
+            fps = basic.main(os.path.join(
                     app.config['UPLOAD_FOLDER'], filename))
-                flag = 1
-            else:
-                basic.main2(os.path.join(
-                    app.config['UPLOAD_FOLDER'], filename))
-                flag = 0
-            return redirect(url_for('processed', filename=filename))
+
+            return redirect(url_for('processed', filename=filename, fps=fps))
     return render_template('index.html')
 
 
 @app.route('/out/<filename>')
-def processed(filename):
-    x = basic.graph("static/video/output/output.mp4",
-     os.path.join(app.config['UPLOAD_FOLDER'], filename),basic.fps)
-    return render_template('output.html', filename=filename,x=x,flag = flag)
+def processed(filename, fps):
+    metrics = basic.graph("static/video/output/output.mp4",
+        os.path.join(app.config['UPLOAD_FOLDER'], filename), fps)
+    return render_template('output.html', filename=filename,metrics=metrics)
 
 
 @app.route('/download')
 def download():
     return send_file('static/video/output/output.mp4', as_attachment=True, attachment_filename='processed-video.mp4', cache_timeout=0)
-
-@app.route('/download1')
-def download1():
-    return send_file('static/video/output/acci-out.mp4', as_attachment=True, attachment_filename='accident-video.mp4', cache_timeout=0)
 
 
 

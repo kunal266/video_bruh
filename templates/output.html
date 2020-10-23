@@ -43,12 +43,7 @@
 					<div class="col-sm-5 text-center wow fadeInUp" data-wow-duration="500ms" style="margin-left:30px" >
 						<div class="block">							
 					<video id='my-video' class='video-js vjs-big-play-centered' controls="controls" preload='auto' width='670' height='400' poster='' data-setup='{"playbackRates": [1, 1.5, 2]}'>
-
-					{% if flag == 1 %}
-						<source src="/static/video/output/acci-out.mp4" type="video/mp4">
-					{% else %}
-      			<source src="/static/video/input/{{ filename }}" type="video/mp4">
-					{% endif %}
+	      			<source src="/static/video/input/{{ filename }}" type="video/mp4">
 
       		<p class='vjs-no-js'>
        		 To view this video please enable JavaScript, and consider upgrading to a web browser that
@@ -56,11 +51,7 @@
       		</p>
     			</video>
 					<div class="content text-center">
-							{% if flag == 1 %}
-								<h3>Accident Video</h3>
-							{% else %}
 								<h3>Input Video</h3>
-							{% endif %}
 							</div>
 						</div>
 					</div> 
@@ -119,12 +110,7 @@
 		 <br><br><br>
 	<center>
 	     <form>
-			 {% if flag == 1 %}
-			<button class="btnn" type="submit" formaction="/download">Download Accident Video</button>
-			<button class="btnn" type="submit" formaction="/download1">Download Summarized Video</button>
-			{% else %}
-      <button class="btnn" type="submit" formaction="/download">Download</button>
-			{% endif %}
+			<button class="btnn" type="submit" formaction="/download">Download Summarized Video</button>
     </form>
 		</center>
 </section> 
@@ -133,57 +119,57 @@
    <script src='https://vjs.zencdn.net/7.6.5/video.js'></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
-    var d = {{x|tojson}}
-    google.charts.load('current', {packages: ['corechart', 'bar']});
-    google.charts.setOnLoadCallback(drawAxisTickColors);
+		var d = {{ metrics|tojson }};
+		google.charts.load('current', {packages: ['corechart', 'bar']});
+		google.charts.setOnLoadCallback(drawAxisTickColors);
 
-    function drawAxisTickColors() {
-          var data = google.visualization.arrayToDataTable([
-            ['Stats', 'processed_video', 'original_video'],
-            ['filesize(mb)', d[0], d[1]],
-            ['no_of_frames',d[2] ,d[3] ],
-            ['duration', d[4], d[5]],
+		function drawAxisTickColors() {
+			var data = google.visualization.arrayToDataTable([
+				['Stats', 'processed_video', 'original_video'],
+				['filesize(mb)', d[0], d[1]],
+				['no_of_frames',d[2] ,d[3] ],
+				['duration', d[4], d[5]],
 
-          ]);
+			]);
 
-          var options = {
-            title: 'Comparision of Stats b/w Original & Processed Video File',
-            chartArea: {width: '70%'},
-            width: 870,
-            height:500 ,
-						backgroundColor: '#353b43',
-            hAxis: {
-              title: '---',
-              minValue: 0,
-              textStyle: {
-                bold: true,
-                fontSize: 12,
-                color: '#ffffff'
-              },
-              titleTextStyle: {
-                bold: true,
-                fontSize: 18,
-                color: '#4d4d4d'
-              }
-            },
-            vAxis: {
-              title: 'Stats',
-              textStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#ffffff'
-              },
-              titleTextStyle: {
-                fontSize: 14,
-                bold: true,
-                color: '#ffffff'
-              }
-							
-            }
-          };
-          var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
-          chart.draw(data, options);
-        }
+			var options = {
+				title: 'Comparision of Stats b/w Original & Processed Video File',
+				chartArea: {width: '70%'},
+				width: 870,
+				height:500 ,
+							backgroundColor: '#353b43',
+				hAxis: {
+				title: '---',
+				minValue: 0,
+				textStyle: {
+					bold: true,
+					fontSize: 12,
+					color: '#ffffff'
+				},
+				titleTextStyle: {
+					bold: true,
+					fontSize: 18,
+					color: '#4d4d4d'
+				}
+				},
+				vAxis: {
+				title: 'Stats',
+				textStyle: {
+					fontSize: 14,
+					bold: true,
+					color: '#ffffff'
+				},
+				titleTextStyle: {
+					fontSize: 14,
+					bold: true,
+					color: '#ffffff'
+				}
+								
+				}
+			};
+			var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+			chart.draw(data, options);
+			}
     </script>
      
 		
