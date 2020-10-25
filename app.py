@@ -50,16 +50,17 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/out/<filename>')
+@app.route('/out')
 def processed(filename, fps):
     metrics = basic.graph("static/video/output/output.mp4",
         os.path.join(app.config['UPLOAD_FOLDER'], filename), fps)
-    return render_template('output.html', filename=filename,metrics=metrics)
+    return render_template('output.html', filename=filename, metrics=metrics)
 
 
 @app.route('/download')
 def download():
-    return send_file('static/video/output/output.mp4', as_attachment=True, attachment_filename='processed-video.mp4', cache_timeout=0)
+    return send_file('static/video/output/output.mp4', as_attachment=True, 
+                                attachment_filename='processed-video.mp4', cache_timeout=0)
 
 
 
