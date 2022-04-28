@@ -3,8 +3,9 @@ import os
 import imutils
 import numpy as np
 
-
+# 
 def ImpTimestamp(timestamps,fps):
+    # list of final output frame
     impTime = []
     for i in range(len(timestamps)-1):
       if (timestamps[i+1]-timestamps[i]- float(1/fps)) > 0.0001:
@@ -13,7 +14,7 @@ def ImpTimestamp(timestamps,fps):
 
     return impTime
 
-def FrameExtract(path,reso): 
+def FrameExtract(path,reso): #parameters are video file path and resolution
     vidObj = cv2.VideoCapture(path) 
     fps = vidObj.get(cv2.CAP_PROP_FPS)
     g_frame=[]
@@ -49,9 +50,10 @@ def impPt(frame,fps):
         opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
         thresh = cv2.dilate(opening, None, iterations=4)
         closing = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel2)
+
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
-        
+        # Add timestamps to the foreground objects
         maxi = 0
         for c in cnts:
             if cv2.contourArea(c) > maxi:
@@ -71,6 +73,7 @@ def impPt(frame,fps):
             
     return frame_nos,imp_frams,timestamps
 
+#showing the difference between both graph in the webpage with graph drawn
 def graph(inf, outf,fps):     #returns list- [input file size, output file size, in frames, out frames, in duration, out duration]
     
     graph_list = np.zeros(6)
@@ -106,7 +109,7 @@ def main(vid_file):
     g_frames, fps, height, width = FrameExtract(vid_file,480)
     _, impFrams, timestamps = impPt(g_frames,fps)
     g_frames = 0
-
+    print("this is working hahaha(●'◡'●)")
     genImpVid("static/video/output/og.mp4",impFrams,height,width,True,fps)
 
     ImpTimestamp(timestamps,fps)

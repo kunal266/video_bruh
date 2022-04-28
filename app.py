@@ -43,6 +43,7 @@ def index():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             # run the summarizer & get fps
+            # Calls the main function in basic.py
             fps = basic.main(os.path.join(
                     app.config['UPLOAD_FOLDER'], filename))
 
@@ -51,10 +52,12 @@ def index():
 
 
 @app.route('/out')
-def processed(filename, fps):
-    metrics = basic.graph("static/video/output/output.mp4",
-        os.path.join(app.config['UPLOAD_FOLDER'], filename), fps)
-    return render_template('output.html', filename=filename, metrics=metrics)
+def processed():
+    filename = "video.mp4"
+    fps = 30.011125336362067
+    metrics = basic.graph("static/video/output/output.mp4",os.path.join(app.config['UPLOAD_FOLDER'], filename), fps)
+    print(filename)
+    return render_template('output.html', metrics=metrics)
 
 
 @app.route('/download')
